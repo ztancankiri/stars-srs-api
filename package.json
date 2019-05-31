@@ -18,7 +18,10 @@
     },
     "homepage": "https://github.com/ztancankiri/stars-srs-api#readme",
     "dependencies": {
+        "imap": "^0.8.19",
+        "mailparser": "^2.7.1",
         "nodemon": "^1.19.1",
-        "restify": "^8.3.2"
+        "restify": "^8.3.2",
+        "util": "^0.12.0"
     }
 }
