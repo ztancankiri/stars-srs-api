@@ -1,0 +1,24 @@
+{
+    "name": "stars-srs-api",
+    "version": "1.0.0",
+    "description": "An unofficial API for Bilkent STARS SRS system.",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon app.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ztancankiri/stars-srs-api.git"
+    },
+    "author": "Zafer Tan Cankiri",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/ztancankiri/stars-srs-api/issues"
+    },
+    "homepage": "https://github.com/ztancankiri/stars-srs-api#readme",
+    "dependencies": {
+        "nodemon": "^1.19.1",
+        "restify": "^8.3.2"
+    }
+}
