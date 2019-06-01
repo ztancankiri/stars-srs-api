@@ -30,13 +30,4 @@ async function run() {
     getGrades(login.getSession());
 }
 
-async function test() {
-    const codeData = await rec.receive(config, 'ZVMK');
-    const codeObj = codeExtractor(codeData.text);
-
-    console.log(codeObj);
-}
-
-//test();
-
 run();
