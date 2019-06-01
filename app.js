@@ -1,33 +1,21 @@
 const cheerio = require('cheerio');
-const login = require('./login');
+const restify = require('restify');
+const plugins = restify.plugins;
 
-async function getGrades(rp) {
-    const options = {
-        method: 'GET',
-        url: 'https://stars.bilkent.edu.tr/srs/ajax/gradeAndAttend/grade.php',
-        headers: {
-            Host: 'stars.bilkent.edu.tr',
-            Connection: 'keep-alive',
-            Origin: 'https://stars.bilkent.edu.tr',
-            Referer: 'https://stars.bilkent.edu.tr/srs/',
-            'X-Requested-With': 'XMLHttpRequest',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
-        },
-        followAllRedirects: true
-    };
+const login = require('./srs_api/login');
+const grades = require('./srs_api/grades');
 
-    await rp(options)
-        .then($ => {
-            console.log($);
-        })
-        .catch(err => {
-            console.log(err);
-        });
-}
+const server = restify.createServer();
+server.use(plugins.queryParser());
+server.use(plugins.bodyParser());
+
+server.listen(8888, '0.0.0.0', () => console.log('Listening on 8888...'));
+
+require('./routes/get_grades')(server);
 
 async function run() {
     await login.login();
-    getGrades(login.getSession());
+    console.log(await grades.get(login.getSession()));
 }
 
 run();
