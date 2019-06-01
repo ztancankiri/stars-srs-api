@@ -18,10 +18,12 @@
     },
     "homepage": "https://github.com/ztancankiri/stars-srs-api#readme",
     "dependencies": {
+        "cheerio": "^1.0.0-rc.3",
         "imap": "^0.8.19",
         "mailparser": "^2.7.1",
         "nodemon": "^1.19.1",
-        "restify": "^8.3.2",
-        "util": "^0.12.0"
+        "request": "^2.88.0",
+        "request-promise": "^4.2.4",
+        "restify": "^8.3.2"
     }
 }

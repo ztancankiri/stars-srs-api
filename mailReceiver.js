@@ -1,7 +1,7 @@
 const Imap = require('imap');
 const simpleParser = require('mailparser').simpleParser;
 
-module.exports = config => {
+module.exports.receive = (config, reference) => {
     return new Promise(function(resolve, reject) {
         const imap = new Imap(config);
 
@@ -24,8 +24,10 @@ module.exports = config => {
                         f.on('message', msg => {
                             msg.on('body', stream => {
                                 simpleParser(stream, (err, mail) => {
-                                    if (mail) resolve(mail);
-                                    else reject(err);
+                                    if (mail.text.includes(reference)) {
+                                        if (mail) resolve(mail);
+                                        else reject(err);
+                                    }
                                 });
                             });
                         });
