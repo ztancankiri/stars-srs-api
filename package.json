@@ -19,7 +19,6 @@
     "homepage": "https://github.com/ztancankiri/stars-srs-api#readme",
     "dependencies": {
         "cheerio": "^1.0.0-rc.3",
-        "fs": "0.0.1-security",
         "imap": "^0.8.19",
         "mailparser": "^2.7.1",
         "nodemon": "^1.19.1",
