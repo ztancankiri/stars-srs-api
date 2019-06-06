@@ -1,4 +1,7 @@
+const rp = require('request-promise');
 const cheerio = require('cheerio');
+const tough = require('tough-cookie');
+const config = require('../config');
 
 function parse(data) {
     const courses = [];
@@ -64,8 +67,19 @@ function parse(data) {
     return courses;
 }
 
-async function getGrades(rp) {
+async function getGrades(PHPSESSID) {
+    const cookie = new tough.Cookie({
+        key: 'PHPSESSID',
+        value: PHPSESSID,
+        domain: 'stars.bilkent.edu.tr',
+        httpOnly: true,
+        maxAge: 31536000
+    });
+
     let result;
+
+    const cookieJar = rp.jar();
+    cookieJar.setCookie(cookie, 'https://stars.bilkent.edu.tr');
 
     const options = {
         method: 'GET',
@@ -76,9 +90,10 @@ async function getGrades(rp) {
             Origin: 'https://stars.bilkent.edu.tr',
             Referer: 'https://stars.bilkent.edu.tr/srs/',
             'X-Requested-With': 'XMLHttpRequest',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+            'User-Agent': config.user_agent
         },
-        followAllRedirects: true
+        followAllRedirects: true,
+        jar: cookieJar
     };
 
     await rp(options)

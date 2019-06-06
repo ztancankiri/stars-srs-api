@@ -1,13 +1,10 @@
-const request = require('request-promise');
+const rp = require('request-promise');
 const cheerio = require('cheerio');
-const config = require('./config');
-const rec = require('./mailReceiver');
-const codeExtractor = require('./codeExtractor');
+const config = require('../config');
+const rec = require('../util/mailReceiver');
+const codeExtractor = require('../util/codeExtractor');
 
-const j = request.jar();
-rp = request.defaults({ jar: j });
-
-async function getLogin() {
+async function getLogin(cookieJar) {
     const result = {};
 
     const options = {
@@ -16,12 +13,13 @@ async function getLogin() {
         headers: {
             Host: 'stars.bilkent.edu.tr',
             Connection: 'keep-alive',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+            'User-Agent': config.user_agent
         },
         transform: body => {
             return cheerio.load(body);
         },
-        followAllRedirects: true
+        followAllRedirects: true,
+        jar: cookieJar
     };
 
     await rp(options)
@@ -40,7 +38,7 @@ async function getLogin() {
     return result;
 }
 
-async function postLogin(url, data) {
+async function postLogin(cookieJar, url, data) {
     const result = {};
 
     const options = {
@@ -52,13 +50,14 @@ async function postLogin(url, data) {
             Origin: 'https://stars.bilkent.edu.tr',
             Referer: 'https://stars.bilkent.edu.tr/accounts/login/',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+            'User-Agent': config.user_agent
         },
         transform: body => {
             return cheerio.load(body);
         },
         followAllRedirects: true,
-        form: data
+        form: data,
+        jar: cookieJar
     };
 
     await rp(options)
@@ -73,7 +72,7 @@ async function postLogin(url, data) {
     return result;
 }
 
-async function verifyEmail(data) {
+async function verifyEmail(cookieJar, data) {
     const options = {
         method: 'POST',
         url: 'https://stars.bilkent.edu.tr/accounts/site/verifyEmail',
@@ -83,13 +82,14 @@ async function verifyEmail(data) {
             Origin: 'https://stars.bilkent.edu.tr',
             Referer: 'https://stars.bilkent.edu.tr/accounts/site/verifyEmail',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+            'User-Agent': config.user_agent
         },
         transform: body => {
             return cheerio.load(body);
         },
         followAllRedirects: true,
-        form: data
+        form: data,
+        jar: cookieJar
     };
 
     await rp(options)
@@ -101,9 +101,39 @@ async function verifyEmail(data) {
         });
 }
 
-async function login() {
-    const formData = await getLogin();
+function getPHPSESSID(cookieJar) {
+    const regex = /PHPSESSID=([A-Za-z0-9]+);/gm;
+    const str = cookieJar._jar.store.idx['stars.bilkent.edu.tr']['/'].PHPSESSID.toString();
+
+    let m, cookie;
+
+    let loopBreaker = false;
+    while ((m = regex.exec(str)) !== null && !loopBreaker) {
+        if (m.index === regex.lastIndex) {
+            regex.lastIndex++;
+        }
+
+        m.forEach((match, groupIndex) => {
+            if (groupIndex == 1) {
+                cookie = match;
+                loopBreaker = true;
+            }
+        });
+    }
+
+    return cookie;
+}
+
+async function login(credentials) {
+    const cookieJar = rp.jar();
+
+    const formData = await getLogin(cookieJar);
     const form = {};
+
+    config.user = credentials.email_username;
+    config.password = credentials.email_password;
+    config.srs_username = credentials.srs_username;
+    config.srs_password = credentials.srs_password;
 
     form[formData.usernameField] = config.srs_username;
     form[formData.passwordField] = config.srs_password;
@@ -112,7 +142,7 @@ async function login() {
     form[formData.buttonField] = '';
 
     const url = 'https://stars.bilkent.edu.tr' + formData.actionURL;
-    const refObj = await postLogin(url, form);
+    const refObj = await postLogin(cookieJar, url, form);
 
     console.log(refObj);
     const codeData = await rec.receive(config, refObj.ref);
@@ -123,11 +153,8 @@ async function login() {
     emailData['EmailVerifyForm[verifyCode]'] = codeObj.code;
     emailData.yt0 = '';
 
-    await verifyEmail(emailData);
+    await verifyEmail(cookieJar, emailData);
+    return getPHPSESSID(cookieJar);
 }
 
-function getSession() {
-    return rp;
-}
-
-module.exports = { login, getSession };
+module.exports = { login };
