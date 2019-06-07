@@ -9,3 +9,5 @@ server.listen(8888, '0.0.0.0', () => console.log('Listening on 8888...'));
 
 require('./routes/login')(server);
 require('./routes/grades')(server);
+require('./routes/attend')(server);
+require('./routes/moodle')(server);
