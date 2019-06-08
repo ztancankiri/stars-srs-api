@@ -12,3 +12,4 @@ require('./routes/grades')(server);
 require('./routes/attend')(server);
 require('./routes/moodle')(server);
 require('./routes/food')(server);
+require('./routes/fcount')(server);
