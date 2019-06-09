@@ -15,3 +15,4 @@ require('./routes/food')(server);
 require('./routes/fcount')(server);
 require('./routes/courses')(server);
 require('./routes/pcount')(server);
+require('./routes/schedule')(server);
