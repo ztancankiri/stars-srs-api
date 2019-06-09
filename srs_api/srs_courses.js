@@ -138,7 +138,7 @@ async function getCourses(PHPSESSID) {
 
     await rp(options)
         .then(data => {
-            result = parse(data);
+            result = parse(data, PHPSESSID);
         })
         .catch(err => {
             console.log(err);
