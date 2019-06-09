@@ -1,17 +1,17 @@
-const srs_fcount = require('../srs_api/srs_fcount');
+const srs_pcount = require('../srs_api/srs_pcount');
 
 module.exports = server => {
-    server.post('/api/fcount', async (req, res) => {
+    server.post('/api/pcount', async (req, res) => {
         const PHPSESSID = req.body.PHPSESSID;
 
-        let fcount;
+        let pcount;
         res.contentType = 'json';
         try {
-            fcount = await srs_fcount.get(PHPSESSID);
+            pcount = await srs_pcount.get(PHPSESSID);
         } catch (e) {
             res.send({ error: e });
         } finally {
-            res.send(fcount);
+            res.send(pcount);
         }
     });
 };

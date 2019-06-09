@@ -2,18 +2,21 @@ const rp = require('request-promise');
 const cheerio = require('cheerio');
 const tough = require('tough-cookie');
 const config = require('../config');
+const regexParser = require('../util/regexParser');
 
 function parse(data) {
     const $ = cheerio.load(data);
 
-    const pageNotes = $("div[class='pageNotes']");
-    const badges = $(pageNotes).find("span[class='badge']");
-    const count = $(badges[2]).text();
+    const pages = $("span[class='text-success']");
 
-    return { meal_count: parseInt(count) };
+    const regex = /[0-9]+/gm;
+    const count = $(pages).text();
+    const matches = regexParser(regex, count);
+
+    return { print_count: parseInt(matches[0]) };
 }
 
-async function getFCount(PHPSESSID) {
+async function getPCount(PHPSESSID) {
     const cookie = new tough.Cookie({
         key: 'PHPSESSID',
         value: PHPSESSID,
@@ -29,7 +32,7 @@ async function getFCount(PHPSESSID) {
 
     const options = {
         method: 'GET',
-        url: 'https://stars.bilkent.edu.tr/srs-v2/meal/order',
+        url: 'https://stars.bilkent.edu.tr/srs-v2/order/print-quota/',
         headers: {
             Host: 'stars.bilkent.edu.tr',
             Connection: 'keep-alive',
@@ -53,4 +56,4 @@ async function getFCount(PHPSESSID) {
     return result;
 }
 
-module.exports.get = getFCount;
+module.exports.get = getPCount;
