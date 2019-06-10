@@ -16,3 +16,4 @@ require('./routes/fcount')(server);
 require('./routes/courses')(server);
 require('./routes/pcount')(server);
 require('./routes/schedule')(server);
+require('./routes/winfo')(server);
