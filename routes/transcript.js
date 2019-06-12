@@ -11,7 +11,6 @@ module.exports = server => {
         } catch (e) {
             res.send({ error: e });
         } finally {
-            //console.log(transcript);
             res.send(transcript);
         }
     });

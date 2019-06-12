@@ -18,3 +18,4 @@ require('./routes/pcount')(server);
 require('./routes/schedule')(server);
 require('./routes/winfo')(server);
 require('./routes/transcript')(server);
+require('./routes/info')(server);
