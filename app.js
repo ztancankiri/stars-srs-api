@@ -21,3 +21,5 @@ require('./routes/transcript')(server);
 require('./routes/info')(server);
 require('./routes/infocard')(server);
 require('./routes/photo')(server);
+require('./routes/lettergrade')(server);
+require('./routes/lettergradestatgraph')(server);
