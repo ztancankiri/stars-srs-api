@@ -5,14 +5,14 @@ module.exports = server => {
         const PHPSESSID = req.body.PHPSESSID;
         const graphID = req.body.graphID;
 
-        let photo;
+        let lettergradestatgraph;
         res.contentType = 'json';
         try {
-            photo = await srs_lettergradestatgraph.get(PHPSESSID, graphID);
+            lettergradestatgraph = await srs_lettergradestatgraph.get(PHPSESSID, graphID);
         } catch (e) {
             res.send({ error: e });
         } finally {
-            res.send(photo);
+            res.send(lettergradestatgraph);
         }
     });
 };

@@ -4,14 +4,14 @@ module.exports = server => {
     server.post('/api/infocard', async (req, res) => {
         const PHPSESSID = req.body.PHPSESSID;
 
-        let info;
+        let infocard;
         res.contentType = 'json';
         try {
-            info = await srs_infocard.get(PHPSESSID);
+            infocard = await srs_infocard.get(PHPSESSID);
         } catch (e) {
             res.send({ error: e });
         } finally {
-            res.send(info);
+            res.send(infocard);
         }
     });
 };
