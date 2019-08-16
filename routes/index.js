@@ -1,18 +1,32 @@
+const path = require('path');
+const fs = require('fs');
+
+const getFiles = dir => {
+	try {
+		if (fs.existsSync(dir)) {
+			if (fs.lstatSync(dir).isDirectory()) {
+				return fs.readdirSync(dir);
+			} else {
+				console.log(`"${dir}" is not a directory.`);
+				return null;
+			}
+		} else {
+			console.log(`"${dir}" does not exist.`);
+			return null;
+		}
+	} catch (e) {
+		console.log(e);
+	}
+	return null;
+};
+
 module.exports.attachRoutes = server => {
-    require('./login')(server);
-    require('./grades')(server);
-    require('./attend')(server);
-    require('./moodle')(server);
-    require('./food')(server);
-    require('./fcount')(server);
-    require('./courses')(server);
-    require('./pcount')(server);
-    require('./schedule')(server);
-    require('./winfo')(server);
-    require('./transcript')(server);
-    require('./info')(server);
-    require('./infocard')(server);
-    require('./photo')(server);
-    require('./lettergrade')(server);
-    require('./lettergradestatgraph')(server);
+	const routesPath = path.join(process.cwd(), 'routes');
+	const routeFiles = getFiles(routesPath);
+	routeFiles.splice(routeFiles.indexOf('index.js'), 1);
+	const routePaths = routeFiles.map(route => path.join(process.cwd(), 'routes', route));
+
+	routePaths.forEach(route => {
+		require(route)(server);
+	});
 };
